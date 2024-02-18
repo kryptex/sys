@@ -1096,7 +1096,7 @@ func SetupDiGetDeviceProperty(deviceInfoSet DevInfo, deviceInfoData *DevInfoData
 			ret := UTF16ToString(bufToUTF16(buf))
 			runtime.KeepAlive(buf)
 			return ret, nil
-		case DEVPROP_TYPE_DATE:
+		case DEVPROP_TYPE_FILETIME:
 			ret := *(*Filetime)(unsafe.Pointer(&buf[0]))
 			return ret, nil
 		}
