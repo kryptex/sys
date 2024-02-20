@@ -1092,6 +1092,9 @@ func SetupDiGetDeviceProperty(deviceInfoSet DevInfo, deviceInfoData *DevInfoData
 			return
 		}
 		switch dataType {
+		case DEVPROP_TYPE_UINT32:
+			ret := *(*uint32)(unsafe.Pointer(&buf[0]))
+			return ret, nil
 		case DEVPROP_TYPE_STRING:
 			ret := UTF16ToString(bufToUTF16(buf))
 			runtime.KeepAlive(buf)
