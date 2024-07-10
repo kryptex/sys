@@ -1099,12 +1099,33 @@ func SetupDiGetDeviceProperty(deviceInfoSet DevInfo, deviceInfoData *DevInfoData
 			ret := UTF16ToString(bufToUTF16(buf))
 			runtime.KeepAlive(buf)
 			return ret, nil
+		case DEVPROP_TYPE_STRING_LIST:
+			ret := UTF16ToStrings(bufToUTF16(buf))
+			runtime.KeepAlive(buf)
+			return ret, nil
 		case DEVPROP_TYPE_FILETIME:
 			ret := *(*Filetime)(unsafe.Pointer(&buf[0]))
 			return ret, nil
 		}
 		return nil, errors.New("unimplemented property type")
 	}
+}
+
+func UTF16ToStrings(u16 []uint16) []string {
+	var strings []string
+	start := 0
+	for i := 0; i < len(u16)-1; i++ { // iterate until the second last element
+		if u16[i] == 0 {
+			if u16[i+1] == 0 { // check for double null termination
+				break
+			}
+			if start != i {
+				strings = append(strings, UTF16ToString(u16[start:i]))
+			}
+			start = i + 1
+		}
+	}
+	return strings
 }
 
 //sys	setupDiGetDeviceRegistryProperty(deviceInfoSet DevInfo, deviceInfoData *DevInfoData, property SPDRP, propertyRegDataType *uint32, propertyBuffer *byte, propertyBufferSize uint32, requiredSize *uint32) (err error) = setupapi.SetupDiGetDeviceRegistryPropertyW
